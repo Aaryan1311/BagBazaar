@@ -19,6 +19,7 @@ const userSchema = new Schema({
         unique:[true, "This email is already registered, Sign in instead"],
         lowercase : true,
         trim : true,
+        // regex expression for email validation
         match : [/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/, "Please provide a valid email address"],
     },
     password: {
@@ -41,32 +42,24 @@ userSchema.pre('save', async function(next){
     this.password = await bcrypt.hash(this.password, 10)
     return next();
 })
+
 userSchema.methods = {
     comparePassword : async function(plainTextPassword) {
         return await bcrypt.compare(plainTextPassword, this.password);
     },
     generateJWTToken : function() {
         return jwt.sign(
-            { id:this._id, role:this.role, email:this.email, subscrption:this.subscrption },
+            { 
+                id:this._id, 
+                role:this.role, 
+                email:this.email,
+            },
             process.env.JWT_SECRET,
             {
                 expiresIn: process.env.JWT_EXPIRY
             }
         )
     },
-    generatePasswordToken: async function(){
-        // generate random token
-        const resetToken = crypto.randomBytes(20).toString('hex')
-        // hash and set to resetPasswordToken field
-        this.forgotPasswordToken = crypto
-            .createHash('sha256')
-            .update(resetToken)
-            .digest('hex')
-        ;
-        // set token expiry to 15 mins
-        this.forgotPasswordExpiry = Date.now() + 15*60*1000 // 15 mins from now
-        return resetToken;
-    }
 }
 
 const User = model('User', userSchema)

@@ -9,10 +9,6 @@ import {
 //   mailResetToken,
 } from "../service/user.service.js";
 
-const cookieOptions = {
-  maxAge: 7 * 24 * 60 * 60 * 1000, //* 7 days
-  httpOnly: true,
-};
 
 export const register = async (req, res) => {
   try {
@@ -31,7 +27,10 @@ export const register = async (req, res) => {
     // Set JWT token in cookie
     const token = await user.generateJWTToken();
     user.password = undefined;
-    res.cookie("token", token, cookieOptions);
+    res.cookie("token", token, {
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
 
     res.status(200).json({
       success: true,

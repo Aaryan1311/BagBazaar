@@ -68,8 +68,6 @@ export const isAuthenticated = (req, res, next) => {
       message: "User not authenticated, please signin/signup",
     });
   }
-  console.log(req.cookies)
-  // inject user information in req
   return res.status(200).json({
     success: true,
     message: "User is authenticated",
