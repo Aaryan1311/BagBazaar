@@ -26,10 +26,6 @@ router.get(
     '/isAuthenticated',
     isAuthenticated, 
 )
-// router.put(
-//     '/update',
-//     AuthValidator.isLoggedIn,
-//     UserController.updateProfile
-// )
+
 
 export default router;
